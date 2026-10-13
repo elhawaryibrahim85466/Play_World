@@ -23,12 +23,13 @@ body {
 .wheel-disc {
   position: absolute; inset: 0; width: 100%; height: 100%;
   border-radius: 50%;
-  filter:
-    drop-shadow(0 0 35px rgba(255,165,0,0.5))
-    drop-shadow(0 22px 45px rgba(0,0,0,0.7))
-    drop-shadow(0 8px 15px rgba(0,0,0,0.5));
+  filter: drop-shadow(0 10px 25px rgba(0,0,0,0.6));
   transition: transform 5s cubic-bezier(0.15, 0.9, 0.15, 1);
   transform-origin: 50% 50%;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
 }
 .spin-btn {
   display: block; margin: 0 auto 14px;
@@ -135,17 +136,8 @@ body {
     </g>
 
     <circle cx="100" cy="100" r="85" fill="url(#shine)" pointer-events="none"/>
-    <circle cx="100" cy="100" r="85" fill="url(#innerRimShadow)" pointer-events="none"/>
 
-    <g id="bulbs" filter="url(#bulbGlow)">
-      <filter id="bulbGlow" x="-50%" y="-50%" width="200%" height="200%">
-        <feGaussianBlur stdDeviation="0.8" result="blur"/>
-        <feMerge>
-          <feMergeNode in="blur"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-      </filter>
-    </g>
+    <g id="bulbs"></g>
 
     <g font-family="Cairo, sans-serif" font-weight="900" text-anchor="middle" dominant-baseline="central">
 
@@ -235,7 +227,6 @@ body {
     </g>
     <filter id="ptDrop" x="-50%" y="-50%" width="200%" height="200%">
       <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-color="rgba(0,0,0,0.8)"/>
-      <feDropShadow dx="0" dy="0" stdDeviation="2" flood-color="rgba(255,215,100,0.6)"/>
     </filter>
   </svg>
 </div>

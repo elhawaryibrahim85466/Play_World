@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>المهام - PlayWorld</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<style>
+.section-header { display: flex; align-items: center; gap: 8px;
+  margin: 22px 0 12px; font-size: 13px; font-weight: 900; color: #F59E0B; }
+.section-header .dot { width: 6px; height: 6px; border-radius: 50%;
+  background: #F59E0B; box-shadow: 0 0 8px #F59E0B; }
+.section-header .count { display: inline-flex; align-items: center; justify-content: center;
+  min-width: 22px; height: 22px; padding: 0 8px; border-radius: 99px;
+  background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.25);
+  color: #F59E0B; font-size: 11px; font-weight: 900; margin-right: 4px; }
+
+.task-list { display: flex; flex-direction: column; gap: 12px; }
+.task-item { display: flex; align-items: center; gap: 12px; padding: 14px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px; box-shadow: inset 0 1px 0 rgba(255,255,255,0.05); }
+.task-item.completed { background: rgba(16,185,129,0.04); border-color: rgba(16,185,129,0.18); }
+.task-icon { width: 48px; height: 48px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, rgba(139,92,246,0.25), rgba(245,158,11,0.18));
+  border: 1px solid rgba(245,158,11,0.2); flex-shrink: 0; }
+.task-icon svg { width: 26px; height: 26px; }
+.task-info { flex: 1; text-align: right; }
+.task-name { font-size: 13px; font-weight: 800; margin-bottom: 3px; }
+.task-reward { font-size: 11px; color: #F59E0B; font-weight: 700; }
+
+.task-btn { background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: #0D0F1D; font-weight: 900; font-size: 11px;
+  padding: 9px 16px; border-radius: 10px; border: none; cursor: pointer;
+  font-family: inherit; white-space: nowrap;
+  box-shadow: 0 0 10px rgba(255,140,0,0.3); }
+.task-btn:active { transform: scale(0.94); }
+.task-btn.verifying { background: rgba(139,92,246,0.15); color: #A78BFA;
+  box-shadow: 0 0 10px rgba(139,92,246,0.2); cursor: wait; }
+.task-btn:disabled { opacity: 0.85; }
+
+.badge-done { display: inline-flex; align-items: center; gap: 4px;
+  padding: 7px 12px; border-radius: 10px;
+  background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.35);
+  color: #10B981; font-size: 11px; font-weight: 900;
+  box-shadow: 0 0 12px rgba(16,185,129,0.2); white-space: nowrap; }
+
+.task-countdown { display: inline-flex; align-items: center; gap: 5px;
+  padding: 7px 10px; border-radius: 10px;
+  background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25);
+  color: #10B981; font-size: 11px; font-weight: 900;
+  font-variant-numeric: tabular-nums; font-family: 'Courier New', monospace;
+  letter-spacing: 0.5px; white-space: nowrap; min-width: 92px; justify-content: center; }
+
+.empty-msg { text-align: center; padding: 24px; color: #4B5563; font-size: 12px; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <a href="index.html" class="back-btn" style="width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;color:#F59E0B;text-decoration:none;font-size:20px;">←</a>
+  <div class="logo-text" style="font-size:18px;">📋 المهام</div>
+  <div class="balance-card">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+      <circle cx="12" cy="12" r="10" fill="#F59E0B"/>
+      <circle cx="12" cy="12" r="8" fill="#FBBF24"/>
+      <text x="12" y="16" text-anchor="middle" font-size="10" font-weight="900" fill="#92400E">$</text>
+    </svg>
+    <span class="value" data-balance>0</span>
+  </div>
+</div>
+
+<div class="section-header">
+  <span class="dot"></span> المهام اليومية <span class="count" id="dailyCount">0</span>
+</div>
+<div class="task-list" id="dailyList"></div>
+
+<div class="section-header">
+  <span class="dot"></span> مهام مرة واحدة <span class="count" id="onceCount">0</span>
+</div>
+<div class="task-list" id="onceList"></div>
+
+<nav class="bottom-nav">
+  <a href="index.html" class="nav-item">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M3 10 L12 3 L21 10 V20 A1 1 0 0 1 20 21 H15 V15 H9 V21 H4 A1 1 0 0 1 3 20 Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </svg>
+    الرئيسية
+  </a>
+  <a href="tasks.html" class="nav-item active">
+    <svg viewBox="0 0 24 24" fill="none">
+      <rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M8 8 H16 M8 12 H16 M8 16 H12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    المهام
+  </a>
+  <a href="#" class="nav-item" onclick="PW.showToast('هذا القسم قريباً 🚀'); return false;">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M4 5 H6 L8 16 H19 L21 7 H7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="9" cy="20" r="1.5" fill="currentColor"/>
+      <circle cx="18" cy="20" r="1.5" fill="currentColor"/>
+    </svg>
+    المتجر
+  </a>
+  <a href="#" class="nav-item" onclick="PW.showToast('هذا القسم قريباً 🚀'); return false;">
+    <svg viewBox="0 0 24 24" fill="none">
+      <circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M3 20 A6 6 0 0 1 15 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="17" cy="9" r="2.5" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M16 14 A5 5 0 0 1 21 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </svg>
+    الأصدقاء
+  </a>
+</nav>
+
+<script src="app.js"></script>
+<script>
+// ===== Config =====
+const TELEGRAM_URL = 'https://t.me/Play_World_BOT';
+
+// ===== Tasks Data =====
+const dailyTasks = [
+  { id: 'login', key: PW.KEYS.DAILY_LOGIN, name: 'تسجيل الدخول اليومي', reward: 50, type: 'simple',
+    icon: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 2 V14 M12 14 L7 9 M12 14 L17 9" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 17 V19 A2 2 0 0 0 6 21 H18 A2 2 0 0 0 20 19 V17" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/></svg>' },
+  { id: 'play', key: PW.KEYS.DAILY_PLAY, name: 'العب جولة في عجلة الحظ', reward: 75, type: 'verify-play',
+    icon: '<svg viewBox="0 0 24 24" fill="none"><path d="M7 8 H17 A5 5 0 0 1 22 13 V15 A3 3 0 0 1 17.5 17 L15.5 15 H8.5 L6.5 17 A3 3 0 0 1 2 15 V13 A5 5 0 0 1 7 8 Z" fill="#06B6D4" opacity="0.25" stroke="#06B6D4" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7" cy="12" r="1.2" fill="#06B6D4"/><circle cx="9.5" cy="14.5" r="1.2" fill="#06B6D4"/></svg>' }
+];
+
+const onceTasks = [
+  { id: 'telegram', doneKey: PW.KEYS.ONCE_TELEGRAM, verifyKey: PW.KEYS.VERIFY_TELEGRAM,
+    name: 'متابعة قناة التلجرام', reward: 100, type: 'open-verify',
+    icon: '<svg viewBox="0 0 24 24" fill="none"><path d="M21 4 L3 11 L10 14 L13 21 L21 4 Z" fill="#F59E0B" opacity="0.3"/><path d="M21 4 L3 11 L10 14 L13 21 L21 4 Z" stroke="#F59E0B" stroke-width="1.8" stroke-linejoin="round"/></svg>' }
+];
+
+// ===== Render =====
+function renderTask(task, group) {
+  const doneDaily = group === 'daily' ? PW.getDailyDone(task.key) : 0;
+  const doneOnce = group === 'once' ? PW.isOnceDone(task.doneKey) : false;
+  const done = group === 'daily' ? doneDaily > 0 : doneOnce;
+  let actionHTML = '';
+
+  if (group === 'once' && done) {
+    actionHTML = '<span class="badge-done">مكتملة ✨</span>';
+  } else if (group === 'daily' && done) {
+    actionHTML = '<span class="task-countdown" data-key="' + task.key + '">⏳ <span class="time">--:--:--</span></span>';
+  } else if (task.type === 'simple') {
+    actionHTML = '<button class="task-btn" onclick="claimTask(\'' + task.id + '\', ' + task.reward + ', \'' + group + '\')">مطالبة</button>';
+  } else if (task.type === 'open-verify') {
+    const vStart = PW.getVerifyStart(task.verifyKey);
+    if (vStart > 0) {
+      const elapsed = (Date.now() - vStart) / 1000;
+      if (elapsed < PW.VERIFY_SECONDS) {
+        actionHTML = '<button class="task-btn verifying" disabled id="verBtn-' + task.id + '">جاري التحقق (' + Math.ceil(PW.VERIFY_SECONDS - elapsed) + 's)...</button>';
+      } else {
+        actionHTML = '<button class="task-btn" onclick="claimTask(\'' + task.id + '\', ' + task.reward + ', \'' + group + '\')">مطالبة</button>';
+      }
+    } else {
+      actionHTML = '<button class="task-btn" onclick="openVerify(\'' + task.id + '\', \'' + task.verifyKey + '\')">انتقال</button>';
+    }
+  } else if (task.type === 'verify-play') {
+    if (localStorage.getItem(PW.KEYS.PLAYED_WHEEL) === 'true') {
+      actionHTML = '<button class="task-btn" onclick="claimTask(\'' + task.id + '\', ' + task.reward + ', \'' + group + '\')">مطالبة</button>';
+    } else {
+      actionHTML = '<button class="task-btn" onclick="location.href=\'wheel.html\'">العب</button>';
+    }
+  }
+
+  return '<div class="task-item ' + (done ? 'completed' : '') + '">' +
+    '<div class="task-icon">' + task.icon + '</div>' +
+    '<div class="task-info">' +
+      '<div class="task-name">' + task.name + '</div>' +
+      '<div class="task-reward">🪙 +' + task.reward + ' كوين</div>' +
+    '</div>' + actionHTML + '</div>';
+}
+
+function renderAll() {
+  document.getElementById('dailyList').innerHTML = dailyTasks.map(t => renderTask(t, 'daily')).join('');
+  document.getElementById('dailyCount').innerText = dailyTasks.length;
+
+  const remaining = onceTasks.filter(t => !PW.isOnceDone(t.doneKey));
+  if (remaining.length === 0) {
+    document.getElementById('onceList').innerHTML = '<div class="empty-msg">🎉 أكملت كل المهام لمرة واحدة!</div>';
+    document.getElementById('onceCount').innerText = '0';
+  } else {
+    document.getElementById('onceList').innerHTML = remaining.map(t => renderTask(t, 'once')).join('');
+    document.getElementById('onceCount').innerText = remaining.length;
+  }
+  startCountdowns();
+}
+
+// ===== Countdowns =====
+let interval;
+function startCountdowns() {
+  clearInterval(interval);
+  function update() {
+    let needRender = false;
+
+    document.querySelectorAll('[data-key]').forEach(el => {
+      const key = el.dataset.key;
+      const last = PW.getDailyDone(key);
+      if (!last) return;
+      const remaining = PW.DAY_MS - (Date.now() - last);
+      if (remaining <= 0) { needRender = true; return; }
+      const h = Math.floor(remaining / 3600000);
+      const m = Math.floor((remaining % 3600000) / 60000);
+      const s = Math.floor((remaining % 60000) / 1000);
+      const t = el.querySelector('.time');
+      if (t) t.innerText = String(h).padStart(2,'0') + ':' + String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+    });
+
+    onceTasks.forEach(task => {
+      const vStart = PW.getVerifyStart(task.verifyKey);
+      if (vStart > 0) {
+        const elapsed = (Date.now() - vStart) / 1000;
+        if (elapsed >= PW.VERIFY_SECONDS) needRender = true;
+        else {
+          const btn = document.getElementById('verBtn-' + task.id);
+          if (btn) btn.innerText = 'جاري التحقق (' + Math.ceil(PW.VERIFY_SECONDS - elapsed) + 's)...';
+        }
+      }
+    });
+
+    if (needRender) renderAll();
+  }
+  update();
+  interval = setInterval(update, 1000);
+}
+
+// ===== Actions =====
+function openVerify(id, verifyKey) {
+  window.open(TELEGRAM_URL, '_blank');
+  PW.startVerify(verifyKey);
+  PW.showToast('جاري التحقق... انتظر ' + PW.VERIFY_SECONDS + ' ثانية');
+  renderAll();
+}
+
+function claimTask(id, reward, group) {
+  const task = (group === 'daily' ? dailyTasks : onceTasks).find(t => t.id === id);
+  if (group === 'daily') {
+    if (PW.getDailyDone(task.key)) { PW.showToast('استلمت هذه المكافأة اليوم'); return; }
+    PW.markDailyDone(task.key);
+  } else {
+    if (PW.isOnceDone(task.doneKey)) { PW.showToast('استلمت هذه المكافأة بالفعل'); return; }
+    PW.markOnceDone(task.doneKey);
+    PW.clearVerify(task.verifyKey);
+  }
+  PW.addBalance(reward);
+  PW.showToast('🎉 +' + reward + ' كوين!');
+  renderAll();
+}
+
+renderAll();
+document.addEventListener("gesturestart", e => e.preventDefault());
+document.addEventListener("touchmove", e => { if (e.scale && e.scale !== 1) e.preventDefault(); }, { passive: false });
+</script>
+
+</body>
+</html>
