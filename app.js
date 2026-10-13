@@ -1,45 +1,61 @@
 // =====================================================
 //  PlayWorld — Shared App Logic
-//  كل الصفحات بتستخدم نفس المفاتيح
 // =====================================================
 
 const PW = {
-  // ===== localStorage Keys =====
   KEYS: {
     BALANCE: 'pw_balance',
     DAILY_LOGIN: 'pw_task_login',
     DAILY_PLAY: 'pw_task_play',
     ONCE_TELEGRAM: 'pw_once_telegram',
-    ONCE_INVITE: 'pw_once_invite',
     VERIFY_TELEGRAM: 'pw_verify_telegram',
-    VERIFY_INVITE: 'pw_verify_invite',
     PLAYED_WHEEL: 'pw_played_wheel'
   },
 
-  // ===== Constants =====
   DAY_MS: 24 * 60 * 60 * 1000,
   VERIFY_SECONDS: 15,
 
+  // ===== Helpers =====
+  // Round to nearest 0.5 (e.g. 100.4 → 100.5, 100.25 → 100, 100.75 → 101)
+  roundHalf(v) {
+    return Math.round(v * 2) / 2;
+  },
+
+  // Format for display: 100 → "100", 100.5 → "100.5"
+  formatBalance(v) {
+    if (v % 1 === 0) return v.toLocaleString();
+    return v.toFixed(1);
+  },
+
   // ===== Balance =====
   getBalance() {
-    return Number(localStorage.getItem(this.KEYS.BALANCE)) || 1000;
+    const v = Number(localStorage.getItem(this.KEYS.BALANCE));
+    return isNaN(v) ? 1000 : v;
   },
+
   setBalance(v) {
-    localStorage.setItem(this.KEYS.BALANCE, v);
+    const rounded = this.roundHalf(v);
+    localStorage.setItem(this.KEYS.BALANCE, rounded);
     this.updateBalanceUI();
   },
+
   addBalance(amount) {
     const old = this.getBalance();
-    const now = old + amount;
-    this.setBalance(now);
+    const now = this.roundHalf(old + amount);
+    localStorage.setItem(this.KEYS.BALANCE, now);
     this.animateBalance(old, now);
     this.popBalanceCard();
+    return now;
   },
+
   updateBalanceUI() {
+    const v = this.getBalance();
+    const txt = this.formatBalance(v);
     document.querySelectorAll('[data-balance]').forEach(el => {
-      el.innerText = this.getBalance().toLocaleString();
+      el.innerText = txt;
     });
   },
+
   animateBalance(from, to, duration = 700) {
     const els = document.querySelectorAll('[data-balance]');
     if (!els.length) return;
@@ -47,12 +63,15 @@ const PW = {
     function step(now) {
       const p = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - p, 3);
-      const val = Math.round(from + (to - from) * eased).toLocaleString();
-      els.forEach(el => el.innerText = val);
+      const raw = from + (to - from) * eased;
+      const displayed = Math.round(raw * 2) / 2;
+      const txt = (displayed % 1 === 0) ? displayed.toLocaleString() : displayed.toFixed(1);
+      els.forEach(el => el.innerText = txt);
       if (p < 1) requestAnimationFrame(step);
     }
     requestAnimationFrame(step);
   },
+
   popBalanceCard() {
     document.querySelectorAll('.balance-card').forEach(el => {
       el.classList.add('pop');
@@ -60,7 +79,7 @@ const PW = {
     });
   },
 
-  // ===== Daily Task Helpers =====
+  // ===== Daily Tasks =====
   getDailyDone(key) {
     const last = Number(localStorage.getItem(key) || 0);
     return Date.now() - last < this.DAY_MS ? last : 0;
@@ -69,7 +88,7 @@ const PW = {
     localStorage.setItem(key, Date.now());
   },
 
-  // ===== Once Task Helpers =====
+  // ===== Once Tasks =====
   isOnceDone(key) {
     return localStorage.getItem(key) === 'done';
   },
@@ -77,7 +96,7 @@ const PW = {
     localStorage.setItem(key, 'done');
   },
 
-  // ===== Verify Helpers =====
+  // ===== Verify =====
   getVerifyStart(key) {
     return Number(localStorage.getItem(key) || 0);
   },

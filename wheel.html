@@ -10,69 +10,179 @@
 body {
   background: #0D0F1D;
   background-image:
-    radial-gradient(circle at 50% 35%, rgba(245,158,11,0.18) 0%, transparent 50%),
-    radial-gradient(circle at 15% 10%, rgba(139,92,246,0.18), transparent 40%),
-    radial-gradient(circle at 85% 90%, rgba(6,182,212,0.12), transparent 40%);
+    radial-gradient(circle at 50% 35%, rgba(245,158,11,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 15% 10%, rgba(139,92,246,0.15), transparent 40%);
   background-attachment: fixed;
+  padding-bottom: 30px;
 }
-.wheel-wrapper { position: relative; width: 320px; height: 320px; margin: 60px auto 30px; }
-.center-overlay {
-  position: absolute; inset: 0; width: 100%; height: 100%;
-  pointer-events: none; z-index: 6; overflow: visible;
+
+.wheel-wrapper { position: relative; width: 300px; height: 300px; margin: 20px auto 24px; }
+
+.wheel-top-pointer {
+  position: absolute;
+  top: -18px; left: 50%;
+  transform: translateX(-50%);
+  width: 30px; height: 38px;
+  z-index: 20;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.6));
 }
+.wheel-top-pointer svg { width: 100%; height: 100%; display: block; }
+
 .wheel-disc {
-  position: absolute; inset: 0; width: 100%; height: 100%;
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
   border-radius: 50%;
   filter: drop-shadow(0 10px 25px rgba(0,0,0,0.6));
   transition: transform 5s cubic-bezier(0.15, 0.9, 0.15, 1);
   transform-origin: 50% 50%;
   will-change: transform;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  transform: translateZ(0);
 }
-.spin-btn {
-  display: block; margin: 0 auto 14px;
-  width: 100%; max-width: 320px;
+
+.wheel-center {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 68px; height: 68px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fcf6ba, #bf953f 45%, #8b6508 100%);
+  border: 3px solid #5c3a09;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 900;
+  color: #4a0606;
+  letter-spacing: 0.5px;
+  z-index: 6;
+  box-shadow: 0 0 20px rgba(245,158,11,0.5), inset 0 2px 4px rgba(255,255,255,0.5);
+}
+
+.section { max-width: 340px; margin: 0 auto 14px; }
+.section-label {
+  font-size: 12px; color: #9CA3AF; font-weight: 700;
+  margin-bottom: 8px; text-align: right;
+}
+
+.amount-input {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 16px; font-weight: 900;
+  color: #F59E0B;
+  font-family: inherit;
+  text-align: center;
+  outline: none;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+}
+.amount-input::placeholder { color: #4B5563; font-weight: 700; }
+.amount-input:focus { border-color: rgba(245,158,11,0.5); }
+
+.quick-btns {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+.quick-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 8px 0;
+  font-size: 11px; font-weight: 800;
+  color: #9CA3AF;
+  cursor: pointer; font-family: inherit;
+}
+.quick-btn:active { transform: scale(0.93); }
+.quick-btn.active {
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  color: #0D0F1D;
+  border-color: rgba(255,255,255,0.3);
+}
+
+.play-btn {
+  display: block;
+  width: 100%; max-width: 340px;
+  margin: 20px auto 14px;
   background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 40%, #D97706 100%);
   color: #0D0F1D; font-weight: 900; font-size: 16px;
-  padding: 16px 0; border-radius: 18px;
+  padding: 15px 0; border-radius: 18px;
   border: 1px solid rgba(255,255,255,0.35);
   cursor: pointer; font-family: inherit;
   box-shadow: 0 8px 25px rgba(245,158,11,0.4), 0 4px 0 #92400E, inset 0 1px 0 rgba(255,255,255,0.5);
-  transition: transform 0.1s ease;
 }
-.spin-btn:active { transform: translateY(3px); }
-.spin-btn:disabled { opacity: 0.55; cursor: not-allowed; }
-.prize-info { text-align: center; margin-top: 14px; font-size: 12px; color: #9CA3AF; font-weight: 700; }
+.play-btn:active { transform: translateY(3px); }
+.play-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.info {
+  text-align: center; margin-top: 14px;
+  font-size: 12px; color: #9CA3AF; font-weight: 700;
+}
 </style>
 </head>
 <body>
 
 <div class="header">
-  <a href="index.html" style="width:42px;height:42px;border-radius:14px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);display:flex;align-items:center;justify-content:center;color:#F59E0B;text-decoration:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></a>
+  <a href="index.html" style="width:42px;height:42px;border-radius:14px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);display:flex;align-items:center;justify-content:center;color:#F59E0B;text-decoration:none;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  </a>
   <div class="logo-text" style="font-size:18px;">🎡 عجلة الحظ</div>
-  <div class="balance-card">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="12" r="10" fill="#F59E0B"/>
-      <circle cx="12" cy="12" r="8" fill="#FBBF24"/>
-      <text x="12" y="16" text-anchor="middle" font-size="10" font-weight="900" fill="#92400E">$</text>
+  
+  
+  <div style="display:flex;align-items:center;"><a href="game-shop.html" style="display:flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:12px;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.3);color:#F59E0B;text-decoration:none;margin-left:15px;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+      <path d="M4 5 H6 L8 16 H19 L21 7 H7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="9" cy="20" r="1.5" fill="currentColor"/>
+      <circle cx="18" cy="20" r="1.5" fill="currentColor"/>
+    </svg>
+  </a><div class="balance-card">
+    <svg width="20" height="20" viewBox="0 0 32 32" fill="none">
+      <defs>
+        <radialGradient id="pwCoinGrad" cx="35%" cy="30%" r="75%">
+          <stop offset="0%" stop-color="#FEF3C7"/>
+          <stop offset="45%" stop-color="#F59E0B"/>
+          <stop offset="100%" stop-color="#B45309"/>
+        </radialGradient>
+        <radialGradient id="pwCoinInner" cx="40%" cy="35%" r="70%">
+          <stop offset="0%" stop-color="#FFFBEB"/>
+          <stop offset="50%" stop-color="#FBBF24"/>
+          <stop offset="100%" stop-color="#D97706"/>
+        </radialGradient>
+      </defs>
+      <circle cx="16" cy="16" r="15" fill="#92400E"/>
+      <circle cx="16" cy="16" r="14" fill="url(#pwCoinGrad)"/>
+      <circle cx="16" cy="16" r="11" fill="url(#pwCoinInner)" stroke="#92400E" stroke-width="0.6"/>
+      <text x="16" y="20" text-anchor="middle" font-size="9" font-weight="900" fill="#78350F" font-family="Cairo, sans-serif">PW</text>
+      <ellipse cx="12" cy="10" rx="4" ry="2.2" fill="rgba(255,255,255,0.55)"/>
     </svg>
     <span class="value" data-balance>0</span>
-  </div>
+  </div></div>
+  
 </div>
 
 <div class="wheel-wrapper">
+  <div class="wheel-top-pointer">
+    <svg viewBox="0 0 30 38" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="ptGold" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#fcf6ba"/>
+          <stop offset="40%" stop-color="#bf953f"/>
+          <stop offset="100%" stop-color="#5c3a09"/>
+        </linearGradient>
+      </defs>
+      <path d="M4 4 Q4 1, 7 1 L23 1 Q26 1, 26 4 L15 36 Z"
+            fill="url(#ptGold)" stroke="#5c3a09" stroke-width="0.8" stroke-linejoin="round"/>
+      <path d="M6 4 Q6 3, 7 3 L23 3 Q24 3, 24 4 L15 20 Z"
+            fill="rgba(255,255,255,0.5)"/>
+    </svg>
+  </div>
 
   <svg class="wheel-disc" id="wheel" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <linearGradient id="goldRing" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0%" stop-color="#fcf6ba"/>
-        <stop offset="20%" stop-color="#bf953f"/>
-        <stop offset="40%" stop-color="#fbf5b7"/>
-        <stop offset="60%" stop-color="#b38728"/>
-        <stop offset="80%" stop-color="#fcf6ba"/>
-        <stop offset="100%" stop-color="#8b6508"/>
+        <stop offset="25%" stop-color="#bf953f"/>
+        <stop offset="50%" stop-color="#8b6508"/>
+        <stop offset="75%" stop-color="#bf953f"/>
+        <stop offset="100%" stop-color="#fcf6ba"/>
       </linearGradient>
       <linearGradient id="goldRingInner" x1="0" y1="1" x2="1" y2="0">
         <stop offset="0%" stop-color="#b38728"/>
@@ -97,26 +207,15 @@ body {
         <stop offset="60%" stop-color="#bf953f"/>
         <stop offset="100%" stop-color="#8b6508"/>
       </radialGradient>
-      <radialGradient id="shine" cx="50%" cy="25%" r="85%">
-        <stop offset="0%" stop-color="rgba(255,255,255,0.35)"/>
-        <stop offset="35%" stop-color="rgba(255,255,255,0.05)"/>
-        <stop offset="70%" stop-color="rgba(0,0,0,0.15)"/>
-        <stop offset="100%" stop-color="rgba(0,0,0,0.45)"/>
-      </radialGradient>
-      <radialGradient id="innerRimShadow" cx="50%" cy="50%" r="50%">
-        <stop offset="0%" stop-color="rgba(0,0,0,0)"/>
-        <stop offset="85%" stop-color="rgba(0,0,0,0)"/>
-        <stop offset="100%" stop-color="rgba(0,0,0,0.6)"/>
-      </radialGradient>
     </defs>
 
-    <circle cx="100" cy="100" r="96" fill="rgba(0,0,0,0.5)"/>
     <circle cx="100" cy="100" r="94" fill="none" stroke="#6b4f10" stroke-width="1.5"/>
     <circle cx="100" cy="100" r="92" fill="none" stroke="url(#goldRing)" stroke-width="8"/>
     <circle cx="100" cy="100" r="95" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.6"/>
     <circle cx="100" cy="100" r="88.2" fill="none" stroke="rgba(0,0,0,0.6)" stroke-width="0.8"/>
     <circle cx="100" cy="100" r="88" fill="none" stroke="url(#goldRingInner)" stroke-width="1.2"/>
 
+    <!-- Segments (order: ✖, ×2, ×1.5, ×1, ×0.5, ×2.5 — shuffled & fixed) -->
     <g>
       <path d="M100,100 L100,15 A85,85 0 0,1 173.6,57.5 Z" fill="url(#gRed)"/>
       <path d="M100,100 L173.6,57.5 A85,85 0 0,1 173.6,142.5 Z" fill="url(#gCream)"/>
@@ -135,127 +234,176 @@ body {
       <line x1="100" y1="100" x2="26.4" y2="57.5"/>
     </g>
 
-    <circle cx="100" cy="100" r="85" fill="url(#shine)" pointer-events="none"/>
-
     <g id="bulbs"></g>
 
+    <!-- Labels: shuffled & fixed order (seg 0 = ✖, seg 1 = ×2, seg 2 = ×1.5, seg 3 = ×1, seg 4 = ×0.5, seg 5 = ×2.5) -->
     <g font-family="Cairo, sans-serif" font-weight="900" text-anchor="middle" dominant-baseline="central">
 
-      <!-- 🥺 - segment 0 (RED), center 30° → 35% weight -->
+      <!-- Segment 0 : ✖ -->
       <g transform="rotate(30 100 100)">
         <g transform="translate(100 45) rotate(-30)">
-          <text x="0" y="0" font-size="18" fill="#FFF3D6" style="paint-order:stroke; stroke:#5C0A0A; stroke-width:0.9; stroke-linejoin:round;">✖</text>
+          <text x="0" y="0" font-size="18" fill="#FFF3D6"
+                style="paint-order:stroke; stroke:#5C0A0A; stroke-width:0.9; stroke-linejoin:round;">✖</text>
         </g>
       </g>
 
-      <!-- 10 - segment 1 (CREAM), center 90° → 25% -->
+      <!-- Segment 1 : ×2 -->
       <g transform="rotate(90 100 100)">
         <g transform="translate(100 45) rotate(-90)">
-          <text x="0" y="0" font-size="14" fill="#8B1A1A"
-                style="paint-order:stroke; stroke:#FFF3D6; stroke-width:0.9; stroke-linejoin:round;">10</text>
+          <text x="0" y="0" font-size="13" fill="#8B1A1A"
+                style="paint-order:stroke; stroke:#FFF3D6; stroke-width:0.9; stroke-linejoin:round;">×2</text>
         </g>
       </g>
 
-      <!-- 50 - segment 2 (RED), center 150° → 20% -->
+      <!-- Segment 2 : ×1.5 -->
       <g transform="rotate(150 100 100)">
         <g transform="translate(100 45) rotate(-150)">
-          <text x="0" y="0" font-size="14" fill="#FFF3D6"
-                style="paint-order:stroke; stroke:#5C0A0A; stroke-width:0.9; stroke-linejoin:round;">50</text>
+          <text x="0" y="0" font-size="13" fill="#FFF3D6"
+                style="paint-order:stroke; stroke:#5C0A0A; stroke-width:0.9; stroke-linejoin:round;">×1.5</text>
         </g>
       </g>
 
-      <!-- 100 - segment 3 (CREAM), center 210° → 12% -->
+      <!-- Segment 3 : ×1 -->
       <g transform="rotate(210 100 100)">
         <g transform="translate(100 45) rotate(-210)">
           <text x="0" y="0" font-size="13" fill="#8B1A1A"
-                style="paint-order:stroke; stroke:#FFF3D6; stroke-width:0.9; stroke-linejoin:round;">100</text>
+                style="paint-order:stroke; stroke:#FFF3D6; stroke-width:0.9; stroke-linejoin:round;">×1</text>
         </g>
       </g>
 
-      <!-- 250 - segment 4 (RED), center 270° → 6% -->
+      <!-- Segment 4 : ×0.5 -->
       <g transform="rotate(270 100 100)">
         <g transform="translate(100 45) rotate(-270)">
           <text x="0" y="0" font-size="13" fill="#FFF3D6"
-                style="paint-order:stroke; stroke:#5C0A0A; stroke-width:0.9; stroke-linejoin:round;">250</text>
+                style="paint-order:stroke; stroke:#5C0A0A; stroke-width:0.9; stroke-linejoin:round;">×0.5</text>
         </g>
       </g>
 
-      <!-- 500 - segment 5 (CREAM), center 330° → 2% -->
+      <!-- Segment 5 : ×2.5 -->
       <g transform="rotate(330 100 100)">
         <g transform="translate(100 45) rotate(-330)">
           <text x="0" y="0" font-size="13" fill="#8B1A1A"
-                style="paint-order:stroke; stroke:#FFF3D6; stroke-width:0.9; stroke-linejoin:round;">500</text>
+                style="paint-order:stroke; stroke:#FFF3D6; stroke-width:0.9; stroke-linejoin:round;">×2.5</text>
         </g>
       </g>
 
     </g>
   </svg>
 
-  <svg class="center-overlay" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <radialGradient id="centerVelvet" cx="35%" cy="30%" r="75%">
-        <stop offset="0%" stop-color="#e63946"/>
-        <stop offset="45%" stop-color="#c81e1e"/>
-        <stop offset="80%" stop-color="#8b1414"/>
-        <stop offset="100%" stop-color="#4a0606"/>
-      </radialGradient>
-      <radialGradient id="centerGoldRing" cx="50%" cy="30%" r="80%">
-        <stop offset="0%" stop-color="#fcf6ba"/>
-        <stop offset="40%" stop-color="#bf953f"/>
-        <stop offset="75%" stop-color="#8b6508"/>
-        <stop offset="100%" stop-color="#5c3a09"/>
-      </radialGradient>
-      <linearGradient id="spinGold" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#fcf6ba"/>
-        <stop offset="50%" stop-color="#bf953f"/>
-        <stop offset="100%" stop-color="#8b6508"/>
-      </linearGradient>
-    </defs>
-
-    <circle cx="100" cy="100" r="20" fill="url(#centerGoldRing)" stroke="#5c3a09" stroke-width="0.8"/>
-    <circle cx="100" cy="100" r="17" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.5"/>
-    <circle cx="100" cy="100" r="16" fill="url(#centerVelvet)" stroke="#4a0606" stroke-width="0.6"/>
-    <text x="100" y="100" font-family="Cairo, sans-serif" font-size="9" font-weight="900"
-          text-anchor="middle" dominant-baseline="central" fill="url(#spinGold)"
-          style="letter-spacing:0.5px; paint-order:stroke; stroke:#4a0606; stroke-width:0.6; stroke-linejoin:round;">SPIN</text>
-    <ellipse cx="96" cy="94" rx="4" ry="2" fill="rgba(255,255,255,0.25)"/>
-
-    <g filter="url(#ptDrop)">
-      <path d="M94 2 Q94 0, 96 0 L104 0 Q106 0, 106 2 L100 18 Z"
-            fill="#bf953f" stroke="#5c3a09" stroke-width="0.7" stroke-linejoin="round"/>
-      <path d="M95 2 Q95 1, 96 1 L104 1 Q105 1, 105 2 L100 9 Z" fill="rgba(255,255,255,0.6)"/>
-    </g>
-    <filter id="ptDrop" x="-50%" y="-50%" width="200%" height="200%">
-      <feDropShadow dx="0" dy="1" stdDeviation="1.2" flood-color="rgba(0,0,0,0.8)"/>
-    </filter>
-  </svg>
+  <div class="wheel-center">SPIN</div>
 </div>
 
-<button class="spin-btn" id="spinBtn" onclick="spin()">إدارة العجلة 🎡 (50 🪙)</button>
+<div class="section">
+  <div class="section-label">💰 مبلغ اللعب (1 - 100):</div>
+  <input type="text" inputmode="numeric" pattern="[0-9]*" class="amount-input" id="amountInput" placeholder="اكتب المبلغ" oninput="capAmount(this)">
+  <div class="quick-btns">
+    <button class="quick-btn" onclick="setAmount(5, this)">5</button>
+    <button class="quick-btn" onclick="setAmount(10, this)">10</button>
+    <button class="quick-btn" onclick="setAmount(25, this)">25</button>
+    <button class="quick-btn" onclick="setAmount(50, this)">50</button>
+    <button class="quick-btn" onclick="setAmount(75, this)">75</button>
+    <button class="quick-btn" onclick="setAmount(100, this)">100</button>
+  </div>
+</div>
 
-<div class="prize-info">الجوائز: ❌ · 10 · 50 · 100 · 250 · 500</div>
+<button class="play-btn" id="playBtn" onclick="spin()">أدر العجلة 🎡</button>
 
-<nav class="bottom-nav">
-  <a href="index.html" class="nav-item">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M3 10 L12 3 L21 10 V20 A1 1 0 0 1 20 21 H15 V15 H9 V21 H4 A1 1 0 0 1 3 20 Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-    الرئيسية
-  </a>
-  <a href="tasks.html" class="nav-item">
-    <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 8 H16 M8 12 H16 M8 16 H12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    المهام
-  </a>
-  <a href="#" class="nav-item" onclick="PW.showToast('هذا القسم قريباً 🚀'); return false;">
-    <svg viewBox="0 0 24 24" fill="none"><path d="M4 5 H6 L8 16 H19 L21 7 H7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="9" cy="20" r="1.5" fill="currentColor"/><circle cx="18" cy="20" r="1.5" fill="currentColor"/></svg>
-    المتجر
-  </a>
-  <a href="friends.html" class="nav-item">
-    <svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="1.8"/><path d="M3 20 A6 6 0 0 1 15 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="17" cy="9" r="2.5" stroke="currentColor" stroke-width="1.8"/><path d="M16 14 A5 5 0 0 1 21 19" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-    الأصدقاء
-  </a>
-</nav>
+<div class="info">🎯 كل قطاع بيضاعف مبلغك</div>
+
+
 
 <script src="app.js"></script>
 <script>
+function capAmount(input) {
+  // Remove any non-digit characters
+  input.value = input.value.replace(/[^0-9]/g, '');
+  let v = Number(input.value);
+  if (v > 100) input.value = 100;
+  else if (v < 1 && input.value !== '') input.value = 1;
+}
+
+function setAmount(v, btn) {
+  document.getElementById('amountInput').value = v;
+  document.querySelectorAll('.quick-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// Fixed shuffled order mapped to positions on wheel (0=top-right going clockwise)
+// Position: 0 → ✖ (40%), 1 → ×2 (5%), 2 → ×1.5 (14%), 3 → ×1 (18%), 4 → ×0.5 (22%), 5 → ×2.5 (1%)
+const SEGMENTS = [
+  { mult: 0,   weight: 40 },  // ✖
+  { mult: 2,   weight: 5  },  // ×2
+  { mult: 1.5, weight: 14 },  // ×1.5
+  { mult: 1,   weight: 18 },  // ×1
+  { mult: 0.5, weight: 22 },  // ×0.5
+  { mult: 2.5, weight: 1  }   // ×2.5
+];
+
+const TOTAL_WEIGHT = SEGMENTS.reduce((s, x) => s + x.weight, 0);
+const SEGMENT_DEG = 60;
+let spinning = false;
+let currentRotation = 0;
+
+function pickWeightedIndex() {
+  let r = Math.random() * TOTAL_WEIGHT;
+  for (let i = 0; i < SEGMENTS.length; i++) {
+    if (r < SEGMENTS[i].weight) return i;
+    r -= SEGMENTS[i].weight;
+  }
+  return SEGMENTS.length - 1;
+}
+
+function spin() {
+  if (spinning) return;
+
+  const amountInput = document.getElementById('amountInput');
+  let amount = Number(amountInput.value);
+
+  if (!amount || amount < 1) { PW.showToast('اكتب مبلغ صحيح'); return; }
+  if (amount > 100) { PW.showToast('الحد الأقصى 100'); return; }
+
+  const balance = PW.getBalance();
+  if (balance < amount) { PW.showToast('رصيدك غير كافٍ'); return; }
+
+  spinning = true;
+  PW.setBalance(balance - amount);
+
+  const btn = document.getElementById('playBtn');
+  btn.disabled = true;
+
+  const winnerIndex = pickWeightedIndex();
+  const seg = SEGMENTS[winnerIndex];
+
+  const segCenter = winnerIndex * SEGMENT_DEG + SEGMENT_DEG / 2;
+  const jitter = (Math.random() - 0.5) * (SEGMENT_DEG - 16);
+  const targetMod = (360 - segCenter - jitter + 360) % 360;
+  const currentMod = ((currentRotation % 360) + 360) % 360;
+  let delta = (targetMod - currentMod + 360) % 360;
+  const finalRotation = currentRotation + 360 * 5 + delta;
+
+  const wheel = document.getElementById('wheel');
+  wheel.style.transform = 'rotate(' + finalRotation + 'deg)';
+  currentRotation = finalRotation;
+
+  setTimeout(() => {
+    if (seg.mult === 0) {
+      PW.showToast('❌ خسرت ' + amount + ' كوين');
+    } else {
+      const reward = Math.round((amount * seg.mult) * 100) / 100;
+      PW.addBalance(reward);
+      if (seg.mult > 1) {
+        PW.showToast('🎉 ×' + seg.mult + ' → +' + reward + ' كوين');
+      } else if (seg.mult === 1) {
+        PW.showToast('↩️ ×1 → رجعلك ' + reward + ' كوين');
+      } else {
+        PW.showToast('😐 ×0.5 → رجعلك ' + reward + ' كوين');
+      }
+    }
+    spinning = false;
+    btn.disabled = false;
+  }, 5100);
+}
+
 (function() {
   const group = document.getElementById('bulbs');
   const count = 24;
@@ -269,83 +417,11 @@ body {
     bulb.setAttribute('cy', y.toFixed(2));
     bulb.setAttribute('r', '1.8');
     bulb.setAttribute('fill', 'url(#bulbGold)');
-    bulb.setAttribute('stroke', 'rgba(255,215,120,0.9)');
+    bulb.setAttribute('stroke', 'rgba(139,101,8,0.6)');
     bulb.setAttribute('stroke-width', '0.3');
     group.appendChild(bulb);
   }
 })();
-
-// ===== Prize config: index 0..5 maps to segments (0=top-right, going clockwise) =====
-// Each entry: { value, weight }
-// Weights sum = 100 → probability per spin
-const PRIZES = [
-  { value: 0,   weight: 35 },  // 🥺 - segment 0 (top-right)
-  { value: 10,  weight: 25 },  // 10 - segment 1 (right)
-  { value: 50,  weight: 20 },  // 50 - segment 2 (bottom-right)
-  { value: 100, weight: 12 },  // 100 - segment 3 (bottom-left)
-  { value: 250, weight: 6  },  // 250 - segment 4 (left)
-  { value: 500, weight: 2  }   // 500 - segment 5 (top-left)
-];
-
-const TOTAL_WEIGHT = PRIZES.reduce((s, p) => s + p.weight, 0);
-const SEGMENT_DEG = 60;
-const SPIN_COST = 50;
-let spinning = false;
-let currentRotation = 0;
-
-// Weighted random selection
-function pickWeightedIndex() {
-  let r = Math.random() * TOTAL_WEIGHT;
-  for (let i = 0; i < PRIZES.length; i++) {
-    if (r < PRIZES[i].weight) return i;
-    r -= PRIZES[i].weight;
-  }
-  return PRIZES.length - 1;
-}
-
-function spin() {
-  if (spinning) return;
-  const balance = PW.getBalance();
-  if (balance < SPIN_COST) { PW.showToast('رصيدك غير كافٍ'); return; }
-  PW.setBalance(balance - SPIN_COST);
-  spinning = true;
-  const btn = document.getElementById('spinBtn');
-  btn.disabled = true;
-
-  // Pick winner with weighted probability
-  const winnerIndex = pickWeightedIndex();
-  const prize = PRIZES[winnerIndex].value;
-
-  // Bring winner segment center under the top pointer (0°)
-  const segCenter = winnerIndex * SEGMENT_DEG + SEGMENT_DEG / 2;
-  const jitter = (Math.random() - 0.5) * (SEGMENT_DEG - 16);
-
-  // Target absolute rotation angle (mod 360) so that winner is under pointer
-  const targetMod = (360 - segCenter - jitter + 360) % 360;
-
-  // Current rotation mod 360
-  const currentMod = ((currentRotation % 360) + 360) % 360;
-  // How much more we need to rotate to reach target (mod 360)
-  let delta = (targetMod - currentMod + 360) % 360;
-  // Add 5 full spins
-  const finalRotation = currentRotation + 360 * 5 + delta;
-
-  const wheel = document.getElementById('wheel');
-  wheel.style.transform = 'rotate(' + finalRotation + 'deg)';
-  currentRotation = finalRotation;
-
-  setTimeout(() => {
-    if (prize > 0) {
-      PW.addBalance(prize);
-      PW.showToast('🎉 ربحت ' + prize + ' كوين!');
-    } else {
-      PW.showToast('❌ حظ أوفر المرة الجاية');
-    }
-    localStorage.setItem(PW.KEYS.PLAYED_WHEEL, 'true');
-    spinning = false;
-    btn.disabled = false;
-  }, 5100);
-}
 </script>
 
 </body>
