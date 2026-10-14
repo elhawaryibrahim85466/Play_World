@@ -1,5 +1,5 @@
 // =====================================================
-//  PlayWorld — Shared App Logic
+//  PlayWorld — Shared App Logic (Firebase Version)
 // =====================================================
 
 const PW = {
@@ -15,13 +15,85 @@ const PW = {
   DAY_MS: 24 * 60 * 60 * 1000,
   VERIFY_SECONDS: 15,
 
+  // ===== Current User =====
+  userId: null,
+  balance: 0,
+  isReady: false,
+
+  // ===== Init =====
+  async init() {
+    // Get Telegram user
+    const tg = window.Telegram?.WebApp;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+        this.userId = String(tg.initDataUnsafe.user.id);
+      }
+    }
+
+    if (!this.userId) {
+      console.warn('No Telegram user ID found');
+      this.userId = 'unknown_' + Date.now();
+    }
+
+    // Load from Firebase
+    await this.loadBalance();
+
+    // Update UI
+    this.updateBalanceUI();
+    this.isReady = true;
+  },
+
+  // ===== Load Balance from Firebase =====
+  async loadBalance() {
+    try {
+      if (!window.PWFirebase) {
+        console.warn('Firebase not loaded, using localStorage');
+        this.balance = Number(localStorage.getItem(this.KEYS.BALANCE)) || 1000;
+        return;
+      }
+
+      const data = await window.PWFirebase.getUserData(this.userId);
+
+      if (data && typeof data.balance === 'number') {
+        this.balance = data.balance;
+      } else {
+        // New user
+        this.balance = 1000;
+        await window.PWFirebase.createUser(this.userId, {
+          userId: this.userId,
+          balance: 1000,
+          createdAt: new Date()
+        });
+      }
+
+      // Also save to localStorage as cache
+      localStorage.setItem(this.KEYS.BALANCE, this.balance);
+    } catch (e) {
+      console.error('loadBalance error:', e);
+      this.balance = Number(localStorage.getItem(this.KEYS.BALANCE)) || 1000;
+    }
+  },
+
+  // ===== Save Balance to Firebase =====
+  async saveBalance() {
+    try {
+      localStorage.setItem(this.KEYS.BALANCE, this.balance);
+
+      if (window.PWFirebase) {
+        await window.PWFirebase.updateBalance(this.userId, this.balance);
+      }
+    } catch (e) {
+      console.error('saveBalance error:', e);
+    }
+  },
+
   // ===== Helpers =====
-  // Round to nearest 0.5 (e.g. 100.4 → 100.5, 100.25 → 100, 100.75 → 101)
   roundHalf(v) {
     return Math.round(v * 2) / 2;
   },
 
-  // Format for display: 100 → "100", 100.5 → "100.5"
   formatBalance(v) {
     if (v % 1 === 0) return v.toLocaleString();
     return v.toFixed(1);
@@ -29,28 +101,26 @@ const PW = {
 
   // ===== Balance =====
   getBalance() {
-    const v = Number(localStorage.getItem(this.KEYS.BALANCE));
-    return isNaN(v) ? 1000 : v;
+    return this.balance;
   },
 
   setBalance(v) {
-    const rounded = this.roundHalf(v);
-    localStorage.setItem(this.KEYS.BALANCE, rounded);
+    this.balance = this.roundHalf(v);
+    this.saveBalance();
     this.updateBalanceUI();
   },
 
   addBalance(amount) {
-    const old = this.getBalance();
-    const now = this.roundHalf(old + amount);
-    localStorage.setItem(this.KEYS.BALANCE, now);
-    this.animateBalance(old, now);
+    const old = this.balance;
+    this.balance = this.roundHalf(old + amount);
+    this.saveBalance();
+    this.animateBalance(old, this.balance);
     this.popBalanceCard();
-    return now;
+    return this.balance;
   },
 
   updateBalanceUI() {
-    const v = this.getBalance();
-    const txt = this.formatBalance(v);
+    const txt = this.formatBalance(this.balance);
     document.querySelectorAll('[data-balance]').forEach(el => {
       el.innerText = txt;
     });
@@ -60,6 +130,7 @@ const PW = {
     const els = document.querySelectorAll('[data-balance]');
     if (!els.length) return;
     const start = performance.now();
+    const self = this;
     function step(now) {
       const p = Math.min((now - start) / duration, 1);
       const eased = 1 - Math.pow(1 - p, 3);
@@ -125,12 +196,11 @@ const PW = {
       t.style.opacity = '0';
       t.style.transform = 'translateX(-50%) translateY(-100px)';
     }, 2200);
-  },
-
-  // ===== Init =====
-  init() {
-    this.updateBalanceUI();
   }
 };
 
+// ===== Start on load =====
 window.addEventListener('load', () => PW.init());
+
+// Export for modules
+window.PW = PW;
