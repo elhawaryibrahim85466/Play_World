@@ -1,1 +1,7 @@
-*_backup.*
+bot/node_modules/
+bot/.env
+bot/serviceAccountKey.json
+bot/bot.log
+Version/
+*.backup.*
+app_localStorage_backup.js
